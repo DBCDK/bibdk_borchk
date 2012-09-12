@@ -1,0 +1,37 @@
+<?php
+/*class borchkdk extends TingClientRequest{
+public function __construct(){
+}
+// empty;
+public function processResponse($result) {
+}
+public function getRequest(){
+  return array();
+}
+
+}*/
+
+/**
+ * Implements hook_ting_client_webservice (@see ting_client.module)
+ **/
+function bibdk_borchk_ting_client_webservice () {
+  return array('borchk' => 'bibdk_borchk_url',);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter (ting_client_admin_webservices_settings)
+ **/
+function bibdk_borchk_form_ting_client_admin_webservices_settings_alter (&$form,&$form_state) {
+  $form['ting']['bibdk_borchk_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Borchk URL'),
+    '#description' => t('URL to borchk e.g. http://borchk.addi.dk/'),
+    '#required' => TRUE,
+    '#weight' => -1,
+    '#default_value' => variable_get('bibdk_borchk_url', FALSE),
+  );
+}
+
+//$obj = new borchkdk();
+
+//dpm($obj);

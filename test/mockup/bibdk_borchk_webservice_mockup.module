@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Webservice mockup of Open Agency
+ */
+function bibdk_borchk_webservice_mockup_menu() {
+  $items['bibdk_borchk_webservice'] = array(
+    'page callback' => 'bibdk_borchk_webservice_mockup_request',
+    'access callback' => 'bibdk_borchk_webservice_mockup_access',
+  );
+
+  return $items;
+}
+
+/**
+ * Faking the request and returns result. If other requests are made than on city = københavn an error will be returned.
+ * @return String json
+ */
+function bibdk_borchk_webservice_mockup_request() {
+  $path = drupal_get_path('module', 'bibdk_borchk_webservice_mockup');
+  $data = file_get_contents('php://input');
+
+  if( $data ) {
+    $envelope = bibdk_borchk_webservice_mockup_parse_xml($data);
+  }
+  else {
+    echo 'welcome to bibdk_borchk_webservice mockup';
+    return;
+  }
+
+  $request = $envelope->Body->children()->pickupAgencyListRequest;
+
+  // good user
+  $gooduser = ( $data->serviceRequester == 'bibliotek.dk' &&
+              $data->libraryCode == 'DK-716500' &&
+              $data->userId == '0019' &&
+              $data->userPincode == '0019');
+
+  drupal_add_http_header('Content-Type', 'text/xml; charset=utf-8');
+  if( $gooduser ) {
+    $resp = file_get_contents($path.'/gooduser.json');
+  }
+  else{
+    $resp = file_get_contents($path.'/baduser.json');
+  }
+  print $resp;
+}
+
+/**
+ * Parsing the request into a xml object
+ * @param type request from ting-client
+ * @return \SimpleXMLElement
+ */
+function bibdk_borchk_webservice_mockup_parse_xml($soap){
+  $pattern = "/:?SOAP-ENV:?/";
+  $replace = '';
+  $xml = preg_replace($pattern, $replace, $soap);
+
+  $envelope = new SimpleXMLElement($xml);
+  return $envelope;
+}
+
+function bibdk_borchk_webservice_mockup_access() {
+  return TRUE;
+}
