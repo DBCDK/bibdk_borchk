@@ -2,5 +2,7 @@ name = Bibliotek.dk borrower check
 description = verify a borrower against borchk.addi.dk.
 core = 7.x
 package = "Bibliotek.dk"
+files[] = bibdk_borchk.module
+files[] = bibdk_borchk.request.inc
 
 dependencies[] = ting_client
