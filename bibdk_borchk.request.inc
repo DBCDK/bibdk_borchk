@@ -7,6 +7,7 @@ class bibdk_borchk extends TingClientRequest{
   protected $userId;
   protected $action;
   protected $cacheKey;
+  protected $outputType;
 
   public function setServiceRequester($value=NULL) {
     $this->serviceRequester = $value;
@@ -48,11 +49,19 @@ class bibdk_borchk extends TingClientRequest{
     return $this->userId;
   }
 
+  public function setOutputType($value=NULL){
+    $this->outputType=$value;
+  }
+
+  public function getOutputType(){
+    return $this->outputType;
+  }
+
   protected function getRequest() {
     $this->setParameter('action', 'borrowerCheckRequest');
     $this->setParameter('serviceRequester','bibliotek.dk');
 
-    $params = array('libraryCode','userPincode','userId');
+    $params = array('libraryCode','userPincode','userId','outputType');
     foreach ($params as $parameter) {
       $getter = 'get' . ucfirst($parameter);
       if ($value = $this->$getter()) {
