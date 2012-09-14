@@ -45,7 +45,7 @@ function bibdk_borchk_webservice_mockup_request() {
   $request = $envelope->Body->children()->borrowerCheckRequest;
   // good user
   $gooduser = ( $request->serviceRequester == 'bibliotek.dk' &&
-              $data->libraryCode == ' DK-872920' &&
+              $request->libraryCode == 'DK-872920' &&
               $request->userId == '0019' &&
               $request->userPincode == '0019');
   drupal_add_http_header('Content-Type', 'application/json');
