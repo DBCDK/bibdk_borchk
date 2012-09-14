@@ -11,8 +11,17 @@ function bibdk_borchk_ting_client_webservice () {
  **/
 function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType='json'){
   $client = new ting_client_class();
+  $serviceRequester = variable_get('bibdk_borchk_servicerequester');
   // this is the real request
-  $response = $client->do_borchk(array('userId'=>$userId,'userPincode'=>$userPincode,'libraryCode'=>$libraryCode,'outputType'=>$outputType));
+  $response = $client->do_borchk(array(
+    'serviceRequester' => $serviceRequester, 
+    'userId'=>$userId, 'userPincode'=>$userPincode, 
+    'libraryCode'=>$libraryCode, 
+    'outputType'=>$outputType,
+    ));
+
+  // testing only
+  //$response = $client->do_borchk(array('userId'=>'0019','userPincode'=>'0019','libraryCode'=>'DK-716500'));
   return $response;
 }
 
