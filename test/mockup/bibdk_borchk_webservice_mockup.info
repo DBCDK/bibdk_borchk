@@ -3,4 +3,4 @@ description = "Support module for bibdk_borchk test."
 package = bibliotek.dk
 version = VERSION
 core = 7.x
-;hidden = FALSE;
+hidden = TRUE;
