@@ -1,24 +1,25 @@
 <?php
+
 /**
  * Implements hook_ting_client_webservice (@see ting_client.module)
- **/
-function bibdk_borchk_ting_client_webservice () {
+ * */
+function bibdk_borchk_ting_client_webservice() {
   return array('borchk' => 'bibdk_borchk_url',);
 }
 
 /**
  * do a request
- **/
-function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType = 'json'){
+ * */
+function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType = 'json') {
   $client = new ting_client_class();
   $serviceRequester = variable_get('bibdk_borchk_servicerequester');
   // this is the real request
   $response = $client->do_borchk(array(
-    'serviceRequester' => $serviceRequester, 
-    'userId'=>$userId, 'userPincode'=>$userPincode, 
-    'libraryCode'=>$libraryCode, 
-    'outputType'=>$outputType,
-    ));
+    'serviceRequester' => $serviceRequester,
+    'userId' => $userId, 'userPincode' => $userPincode,
+    'libraryCode' => $libraryCode,
+    'outputType' => $outputType,
+      ));
 
   // testing only
   //$response = $client->do_borchk(array('userId'=>'0019','userPincode'=>'0019','libraryCode'=>'DK-716500'));
@@ -30,8 +31,8 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
  * add 2 fields to webservice client settings
  * @url to borchk
  * @servicerequester
- **/
-function bibdk_borchk_form_ting_client_admin_webservices_settings_alter (&$form,&$form_state) {
+ * */
+function bibdk_borchk_form_ting_client_admin_webservices_settings_alter(&$form, &$form_state) {
   $form['ting']['bibdk_borchk_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Borchk URL'),
@@ -39,11 +40,19 @@ function bibdk_borchk_form_ting_client_admin_webservices_settings_alter (&$form,
     '#required' => TRUE,
     '#default_value' => variable_get('bibdk_borchk_url', FALSE),
   );
-   $form['ting']['bibdk_borchk_servicerequester'] = array(
+  $form['ting']['bibdk_borchk_servicerequester'] = array(
     '#type' => 'textfield',
     '#title' => t('Service requester parameter for borchk.addi.dk'),
     '#description' => t('the service requester to use for requests to borchk e.g. bibliotek.dk'),
     '#required' => TRUE,
     '#default_value' => variable_get('bibdk_borchk_servicerequester', FALSE),
   );
+}
+
+/**
+ * Implements hook_how_r_u()
+ * @return Array
+ */
+function bibdk_borchk_how_r_u() {
+  return array('Borchk' => variable_get('bibdk_borchk_url'));
 }
