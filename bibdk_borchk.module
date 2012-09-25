@@ -3,8 +3,11 @@
 /**
  * Implements hook_ting_client_webservice (@see ting_client.module)
  * */
-function bibdk_borchk_ting_client_webservice() {
-  return array('borchk' => 'bibdk_borchk_url',);
+function bibdk_borchk_ting_client_webservice () {
+  $ret = array();
+  $ret['borchk']['class'] = 'bibdk_borchk';
+  $ret['borchk']['url'] = 'bibdk_borchk_url';
+  return $ret;
 }
 
 /**
