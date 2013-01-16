@@ -1,5 +1,6 @@
 <?php
-class bibdk_borchk extends TingClientRequest{
+
+class bibdk_borchk extends TingClientRequest Implements ITingClientRequestCache {
 
   protected $serviceRequester;
   protected $libraryCode;
@@ -9,7 +10,67 @@ class bibdk_borchk extends TingClientRequest{
   protected $cacheKey;
   protected $outputType;
 
-  public function setServiceRequester($value=NULL) {
+  /** Implementation of ITingClientRequestCache */
+
+  /** \brief ITingClientRequestCache::cacheKey; get a cachekey
+   * 
+   * @return string 
+   */
+  public function cacheKey() {
+    $params = $this->getParameters();
+    $ret = '';
+    $this->make_cache_key($params, $ret);
+
+    return md5($ret);
+  }
+
+  /** \brief make a cachekey based on request parameters
+   *
+   * @param array $params
+   * @param string $ret 
+   */
+  private function make_cache_key($params, &$ret) {
+    foreach ($params as $key => $value) {
+      if (is_array($value)) {
+        // recursive
+        $ret.=$key;
+        $this->make_cache_key($value, $ret);
+      }
+      else {
+        $ret.=$value;
+      }
+    }
+  }
+
+  /** \brief ITingClientRequestCache::cacheEnable; Check if cache is enabled
+   *   
+   * @return value of variable (drupal_get)
+   */
+  public function cacheEnable($value = NULL) {
+    $class_name = get_class($this);
+    return variable_get($class_name . TingClientRequest::cache_enable);
+  }
+
+  /*   * \brief set timeout of cache
+   * 
+   * @return mixed value of variable (variable_get)  
+   */
+
+  public function cacheTimeout($value = NULL) {
+    $class_name = get_class($this);
+    return variable_get($class_name . TingClientRequest::cache_lifetime, '1');
+  }
+
+  /* \brief implements ITingClientRequestCache::cacheBin
+   * 
+   * @return string; name of cachebin
+   */
+
+  public function cacheBin() {
+    return 'cache_borchk_webservice';
+  }
+
+  public function setServiceRequester($value = NULL) {
     $this->serviceRequester = $value;
   }
 
@@ -17,7 +78,7 @@ class bibdk_borchk extends TingClientRequest{
     return $this->serviceRequester;
   }
 
-  public function setLibraryCode($value=NULL){
+  public function setLibraryCode($value = NULL) {
     $this->libraryCode = $value;
   }
 
@@ -33,15 +94,15 @@ class bibdk_borchk extends TingClientRequest{
     return $this->userPincode;
   }
 
-  public function setAction($value=NULL){
+  public function setAction($value = NULL) {
     $this->action = $value;
   }
 
-  public function getAction(){
+  public function getAction() {
     return $this->action;
   }
 
-  public function setUserId($value=NULL) {
+  public function setUserId($value = NULL) {
     $this->userId = $value;
   }
 
@@ -49,17 +110,17 @@ class bibdk_borchk extends TingClientRequest{
     return $this->userId;
   }
 
-  public function setOutputType($value=NULL){
-    $this->outputType=$value;
+  public function setOutputType($value = NULL) {
+    $this->outputType = $value;
   }
 
-  public function getOutputType(){
+  public function getOutputType() {
     return $this->outputType;
   }
 
-  protected function getRequest() {
+  public function getRequest() {
     $this->setParameter('action', 'borrowerCheckRequest');
-    $params = array('serviceRequester','libraryCode','userPincode','userId','outputType');
+    $params = array('serviceRequester', 'libraryCode', 'userPincode', 'userId', 'outputType');
     foreach ($params as $parameter) {
       $getter = 'get' . ucfirst($parameter);
       if ($value = $this->$getter()) {
@@ -68,8 +129,10 @@ class bibdk_borchk extends TingClientRequest{
     }
     return $this;
   }
+
   // empty;
   public function processResponse(stdClass $result) {
     return $result;
   }
+
 }
