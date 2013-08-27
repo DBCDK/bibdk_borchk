@@ -17,7 +17,7 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
   $client = new ting_client_class();
   $serviceRequester = variable_get('bibdk_borchk_servicerequester');
   // this is the real request
-  $response = $client->do_borchk(array(
+  $response = $client->do_request('borchk',array(
     'serviceRequester' => $serviceRequester,
     'userId' => $userId, 'userPincode' => $userPincode,
     'libraryCode' => $libraryCode,
