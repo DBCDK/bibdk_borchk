@@ -13,13 +13,17 @@ function bibdk_borchk_ting_client_webservice() {
 /**
  * do a request
  * */
-function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType = 'json') {
-  $client = new ting_client_class();
-  $serviceRequester = variable_get('bibdk_borchk_servicerequester');
+function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType = 'json', $serviceRequester = NULL) {
+  if(empty($serviceRequester)){
+    $serviceRequester = variable_get('bibdk_borchk_servicerequester');
+  }
+
   // this is the real request
+  $client = new ting_client_class();
   $response = $client->do_request('borchk',array(
+    'userId' => $userId,
+    'userPincode' => $userPincode,
     'serviceRequester' => $serviceRequester,
-    'userId' => $userId, 'userPincode' => $userPincode,
     'libraryCode' => $libraryCode,
     'outputType' => $outputType,
   ));
@@ -44,7 +48,7 @@ function bibdk_borchk_form_ting_client_admin_webservices_settings_alter(&$form, 
   $form['ting']['bibdk_borchk_servicerequester'] = array(
     '#type' => 'textfield',
     '#title' => t('Service requester parameter for borchk'),
-    '#description' => t('the service requester to use for requests to borchk e.g. bibliotek.dk'),
+    '#description' => t('the default service requester (if no other given) e.g. bibliotek.dk'),
     '#required' => TRUE,
     '#default_value' => variable_get('bibdk_borchk_servicerequester', FALSE),
   );
