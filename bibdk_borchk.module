@@ -10,6 +10,20 @@ function bibdk_borchk_ting_client_webservice() {
   return $ret;
 }
 
+function bibdk_borchk_netpunkt_request($userid, $agency,$outputType = 'json', $serviceRequester = 'netpunkt'){
+  // this is the real request
+  $client = new ting_client_class();
+  $response = $client->do_request('borchk',array(
+    'action' => 'borrowerCheckRequest',
+    'userId' => $userid,
+    'serviceRequester' => $serviceRequester,
+    'libraryCode' => $agency,
+    'outputType' => $outputType,
+  ));
+
+  return $response;
+}
+
 /**
  * do a request
  * */
@@ -21,6 +35,7 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
   // this is the real request
   $client = new ting_client_class();
   $response = $client->do_request('borchk',array(
+    'action' => 'borrowerCheckRequest',
     'userId' => $userId,
     'userPincode' => $userPincode,
     'serviceRequester' => $serviceRequester,
