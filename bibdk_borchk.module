@@ -53,14 +53,22 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
  * @servicerequester
  * */
 function bibdk_borchk_form_ting_client_admin_webservices_settings_alter(&$form, &$form_state) {
-  $form['ting']['bibdk_borchk_url'] = array(
+  // don't start by defining the fieldset as an array. This way other modules can extend the fieldset.
+  $form['borchk']['#type'] = 'fieldset';
+  $form['borchk']['#title'] = t('borchk settings');
+  $form['borchk']['#description'] = t('Client for borchk, a service for verifiying users against library endpoints.');
+  $form['borchk']['#collapsible'] = TRUE;
+  $form['borchk']['#collapsed'] = TRUE;
+  $form['borchk']['#tree'] = FALSE;
+
+  $form['borchk']['bibdk_borchk_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Borchk URL'),
     '#description' => t('URL to borchk e.g.  http://borchk.addi.dk/2.3/'),
     '#required' => TRUE,
     '#default_value' => variable_get('bibdk_borchk_url', FALSE),
   );
-  $form['ting']['bibdk_borchk_servicerequester'] = array(
+  $form['borchk']['bibdk_borchk_servicerequester'] = array(
     '#type' => 'textfield',
     '#title' => t('Service requester parameter for borchk'),
     '#description' => t('the default service requester (if no other given) e.g. bibliotek.dk'),
