@@ -110,14 +110,6 @@ class bibdk_borchk extends TingClientRequest Implements ITingClientRequestCache 
     return $this->userId;
   }
 
-  public function setOutputType($value = NULL) {
-    $this->outputType = $value;
-  }
-
-  public function getOutputType() {
-    return $this->outputType;
-  }
-
   public function getRequest() {
     $this->setParameter('action', 'borrowerCheckRequest');
     $params = array('serviceRequester', 'libraryCode', 'userPincode', 'userId', 'outputType');
