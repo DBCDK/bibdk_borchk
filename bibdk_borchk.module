@@ -12,15 +12,22 @@ function bibdk_borchk_ting_client_webservice() {
 
 function bibdk_borchk_netpunkt_request($userid, $agency,$outputType = 'json', $serviceRequester = 'netpunkt'){
   // this is the real request
-  $client = new ting_client_class();
-  $response = $client->do_request('borchk',array(
+
+  $params = array(
     'action' => 'borrowerCheckRequest',
     'userId' => $userid,
     'serviceRequester' => $serviceRequester,
     'libraryCode' => $agency,
     'outputType' => $outputType,
-  ));
+  );
 
+  if (module_exists('ting_client')) {
+    $response = ting_client_do_request('borchk', $params);
+  }
+  else {
+    $client = new ting_client_class();
+    $response = $client->do_request('borchk',$params);
+  }
   return $response;
 }
 
@@ -32,17 +39,23 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
     $serviceRequester = variable_get('bibdk_borchk_servicerequester');
   }
 
-  // this is the real request
-  $client = new ting_client_class();
-  $response = $client->do_request('borchk',array(
+  $params = array(
     'action' => 'borrowerCheckRequest',
     'userId' => $userId,
     'userPincode' => $userPincode,
     'serviceRequester' => $serviceRequester,
     'libraryCode' => $libraryCode,
     'outputType' => $outputType,
-  ));
+  );
 
+  if (module_exists('ting_client')) {
+    $response = ting_client_do_request('borchk', $params);
+  }
+  else {
+    // this is the real request
+    $client = new ting_client_class();
+    $response = $client->do_request('borchk', $params);
+  }
   return $response;
 }
 
