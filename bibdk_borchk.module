@@ -21,13 +21,11 @@ function bibdk_borchk_netpunkt_request($userid, $agency,$outputType = 'json', $s
     'outputType' => $outputType,
   );
 
-  if (module_exists('ting_client')) {
-    $response = ting_client_do_request('borchk', $params);
+  if (!class_exists('TingClient') && module_exists('libraries')) {
+    libraries_load('TingClient');
   }
-  else {
-    $client = new ting_client_class();
-    $response = $client->do_request('borchk',$params);
-  }
+  $client = new ting_client_class();
+  $response = $client->do_request('borchk',$params);
   return $response;
 }
 
@@ -48,14 +46,12 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
     'outputType' => $outputType,
   );
 
-  if (module_exists('ting_client')) {
-    $response = ting_client_do_request('borchk', $params);
+  if (!class_exists('TingClient') && module_exists('libraries')) {
+    libraries_load('TingClient');
   }
-  else {
-    // this is the real request
-    $client = new ting_client_class();
-    $response = $client->do_request('borchk', $params);
-  }
+  // this is the real request
+  $client = new ting_client_class();
+  $response = $client->do_request('borchk', $params);
   return $response;
 }
 
