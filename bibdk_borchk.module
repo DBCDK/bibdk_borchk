@@ -13,6 +13,8 @@ function bibdk_borchk_ting_client_webservice() {
 function bibdk_borchk_netpunkt_request($userid, $agency,$outputType = 'json', $serviceRequester = 'netpunkt'){
   // this is the real request
 
+  global $user;
+
   $params = array(
     'action' => 'borrowerCheckRequest',
     'userId' => $userid,
@@ -21,9 +23,13 @@ function bibdk_borchk_netpunkt_request($userid, $agency,$outputType = 'json', $s
     'outputType' => $outputType,
   );
 
-
   $client = new ting_client_class();
   $response = $client->do_request('borchk',$params);
+
+  if (class_exists('DBC\AT\AuditTrail')) {
+    _bibdk_borchk_call_audittrail($userid, $agency);
+  }
+
   return $response;
 }
 
@@ -44,10 +50,15 @@ function bibdk_borchk_request($userId, $userPincode, $libraryCode, $outputType =
     'outputType' => $outputType,
   );
 
- 
+
   // this is the real request
   $client = new ting_client_class();
   $response = $client->do_request('borchk', $params);
+
+  if (class_exists('DBC\AT\AuditTrail')) {
+    _bibdk_borchk_call_audittrail($userId, $libraryCode);
+  }
+
   return $response;
 }
 
@@ -88,4 +99,39 @@ function bibdk_borchk_form_ting_client_admin_webservices_settings_alter(&$form, 
  */
 function bibdk_borchk_how_r_u() {
   return array('Borchk' => variable_get('bibdk_borchk_url'));
+}
+
+/**
+ * @param $userid
+ * @param $agency
+ */
+function _bibdk_borchk_call_audittrail($userid, $agency) {
+
+  if (isset($_SESSION['heimdal']) && !empty($_SESSION['heimdal'])) {
+    // Token can either be Heimdals access_token or the agency from the Netpunkt Triple. The Netpunkt triple is only
+    // used by DBC.
+    $token = (isset($_SESSION['heimdal']['access_token']) && !empty($_SESSION['heimdal']['access_token'])) ?
+      $_SESSION['heimdal']['access_token'] : "DBC-" . $agency;
+    $ipAddress = ip_address();
+    // Audit_response is either requestStatus, faultstring or empty string. In that order.
+    $audit_response = (isset($response->borrowerCheckRespoonse->requestStatus->{'$'}) ?
+      $response->borrowerCheckRespoonse->requestStatus->{'$'} : (isset($result->faultstring->{'$'}) ? $result->faultstring->{'$'} : '')
+    );
+    try {
+      DBC\AT\AuditTrail::log(
+        $token,
+        ((!is_array($ipAddress)) ? [$ipAddress] : $ipAddress),
+        'Netpunkt',
+        'read',
+        $userid,
+        [
+          'agency' => $agency,
+          'borchkresponse' => $audit_response
+        ]
+      );
+    } catch (Exception $e) {
+      watchdog('bibdk_borchk', $e->getMessage(), [], WATCHDOG_ERROR);
+    }
+  }
+
 }
