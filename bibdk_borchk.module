@@ -129,6 +129,8 @@ function _bibdk_borchk_call_audittrail($userid, $agency) {
           'borchkresponse' => $audit_response
         ]
       );
+    } catch (TypeError $e) {
+      watchdog('bibdk_borchk', $e->getMessage(), [], WATCHDOG_ERROR);
     } catch (Exception $e) {
       watchdog('bibdk_borchk', $e->getMessage(), [], WATCHDOG_ERROR);
     }
